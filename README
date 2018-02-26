@@ -1,7 +1,6 @@
 cheap parallel prime number tester.
 
-$ ifort -g -O3 -mavx is_prime.F90 -o seri
-$ ifort -g -O3 -mavx -fopenmp is_prime.F90 -o omp
+$ make
 
 $ time ./seri 2147483647
 val: 2147483647
