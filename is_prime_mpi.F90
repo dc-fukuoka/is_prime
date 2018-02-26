@@ -66,7 +66,7 @@ contains
        !$omp parallel private(i, is_prim_p)
        !$ is_prim_p = .true.
        !$omp do reduction(*:is_prim)
-       do i = 3, val-1, 2
+       do i = 3, iend-1, 2
           if (mod(val, i) == 0) then
 #ifdef _OPENMP
              !$ is_prim_p = .false.
