@@ -121,7 +121,6 @@ program main
   use subs
   implicit none
   integer(8) :: val
-  character(len=32) :: argv1
   logical :: is_prim
 
   call myinit(val)
