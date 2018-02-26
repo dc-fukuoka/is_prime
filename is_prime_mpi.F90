@@ -3,13 +3,12 @@ module subs
   implicit none
   integer :: iam, np
   integer(8) :: istart, iend
-  integer(8) :: size_l, size_mod
   
 contains
   subroutine myinit(size)
     implicit none
     integer(8),intent(inout) :: size
-    integer(8) :: i
+    integer(8) :: i, size_l, size_mod
     character(len=32) :: argv1
 
     call mpi_init
