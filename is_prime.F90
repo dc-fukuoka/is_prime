@@ -1,7 +1,7 @@
 module subs
   implicit none
 contains
-  subroutine is_primee(val, is_prim)
+  subroutine is_prime(val, is_prim)
     !$use omp_lib
     implicit none
     integer(8),intent(in) :: val
@@ -43,7 +43,7 @@ contains
     is_prim = .true.
 #endif
 
-  end subroutine is_primee
+  end subroutine is_prime
 end module subs
 
 program main
@@ -60,7 +60,7 @@ program main
      read(argv1, *) val
   end if
   write(6, *) "val:", val
-  call is_primee(val, is_prim)
+  call is_prime(val, is_prim)
   if (is_prim) then
      write(6, *) "this is a prime number."
   else
