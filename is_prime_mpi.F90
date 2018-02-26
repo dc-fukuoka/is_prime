@@ -4,10 +4,6 @@ module subs
   integer :: iam, np
   integer(8) :: istart, iend
   integer(8) :: size_l, size_mod
-#ifdef _DEBUG
-  integer(8),allocatable,dimension(:) :: array ! for debug
-#endif
-  integer(8),allocatable,dimension(:) :: array_l, sizes
   
 contains
   subroutine myinit(size)
@@ -27,17 +23,6 @@ contains
        read(argv1, *) size
     end if
 
-#ifdef _DEBUG
-    if (iam == 0) then
-       allocate(array(size), sizes(np))
-       do i = 1, size
-          array(i) = i
-       end do
-       write(6, *) "size:", size
-    end if
-    call mpi_barrier(mpi_comm_world)
-#endif
-
     size_mod = mod(size, np)
     size_l = size/np
     if (iam < size_mod) then
@@ -51,10 +36,6 @@ contains
     end if
     iend   = istart + size_l - 1
 
-    allocate(array_l(istart:iend))
-    do i = istart, iend
-       array_l(i) = i
-    end do
 #ifdef _DEBUG
     write(6, '(a, 3i4)') "iam, istart, iend:", iam, istart, iend
 #endif
@@ -132,17 +113,12 @@ contains
   subroutine myfini
     implicit none
 
-#ifdef _DEBUG
-    if (iam == 0) deallocate(array)
-#endif
-    deallocate(array_l)
     call mpi_finalize
   end subroutine myfini
 
 end module subs
 
 program main
-  use mpi_f08
   use subs
   implicit none
   integer(8) :: val
@@ -150,7 +126,7 @@ program main
   logical :: is_prim
 
   call myinit(val)
-  
+
   if (iam == 0) write(6, *) "val:", val
   
   call is_prime(val, is_prim)
