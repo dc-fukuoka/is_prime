@@ -1,0 +1,24 @@
+cheap parallel prime number tester.
+
+$ ifort -g -O3 -mavx is_prime.F90 -o seri
+$ ifort -g -O3 -mavx -fopenmp is_prime.F90 -o omp
+
+$ time ./seri 2147483647
+val: 2147483647
+this is a prime number.
+
+real 0m11.653s
+user 0m11.641s
+sys 0m0.001s
+
+$ time ./omp 2147483647
+val: 2147483647
+this is a prime number.
+
+real 0m1.124s
+user 0m14.925s
+sys 0m0.258s
+
+
+CPU: Intel(R) Xeon(R) CPU E5-2680 0 @ 2.70GHz, 2 sockets/8 cores per socket
+
