@@ -67,7 +67,7 @@ contains
        return
     end if
 
-    if (istart == iend .and. iend .ne. val .and. (istart /= 1 .and. istart /= 2)) then
+    if (istart == iend .and. iend /= val .and. (istart /= 1 .and. istart /= 2)) then
        i = iend
        if (mod(val, i) == 0) then
           is_prim = .false.
