@@ -60,10 +60,7 @@ contains
    
     is_prim = .true.
 
-    if (val == 2) then
-       is_prim = .true.
-       return
-    end if
+    if (val == 2) return
 
     if (val == 1 .or. mod(val, 2) == 0) then
        is_prim = .false.

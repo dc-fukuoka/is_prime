@@ -1,4 +1,5 @@
 cheap parallel prime number tester.
+region division with remainder(calculate istart and iend for each process) could be useful for some other cases...?
 
 $ make
 
