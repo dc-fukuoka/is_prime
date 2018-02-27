@@ -18,7 +18,14 @@ real 0m1.124s
 user 0m14.925s
 sys 0m0.258s
 
+$ time srun --mpi=pmi2 -n64 -c1 --cpu_bind=cores -m block:block ./mpi 2147483647
+ val:            2147483647
+ this is a prime number.
+
+real    0m0.897s
+user    0m0.011s
+sys     0m0.015s
+
 
 CPU: Intel(R) Xeon(R) CPU E5-2680 0 @ 2.70GHz, 2 sockets/8 cores per socket
-
-MPI version is in progress...
+MPI version: 4 nodes, 64 cores, intelmpi 2018u0

@@ -22,21 +22,30 @@ contains
        read(argv1, *) size
     end if
 
+    if (np > size) then
+       if (iam == 0) write(6, *) "np must be smaller than the input value:", size
+       call mpi_finalize
+       stop
+    end if
+
     size_mod = mod(size, np)
     size_l = size/np
     if (iam < size_mod) then
        size_l = size_l + 1
     end if
 
-    if (iam < size_mod) then
+    if (iam == 0) then
+       istart = 1
+    else if (iam > 0 .and. iam < size_mod) then
        istart = iam*size_l + 1
     else
-       istart = iam*size_l + 1 + size_mod
+       istart = iam*size_l + size_mod + 1
     end if
     iend   = istart + size_l - 1
 
 #ifdef _DEBUG
-    write(6, '(a, 3i4)') "iam, istart, iend:", iam, istart, iend
+    if (iam == 0) write(6, *) "size_mod:", size_mod
+    write(6, '(a, 4i4)') "iam, size_l, istart, iend:", iam, size_l, istart, iend
 #endif
   end subroutine myinit
 
@@ -61,53 +70,48 @@ contains
        return
     end if
 
-    if (iam == 0) then
-       !$omp parallel private(i, is_prim_p)
-       !$ is_prim_p = .true.
-       !$omp do reduction(*:is_prim)
-       do i = 3, iend-1, 2
+    if (istart == iend .and. iend .ne. val .and. (istart /= 1 .and. istart /= 2)) then
+       i = iend
+       if (mod(val, i) == 0) then
+          is_prim = .false.
+          return
+       end if
+    end if
+
+    if (iend <= 3) return
+    
+    if (mod(istart, 2) == 0) istart = istart + 1   
+       
+    if (iend /= val) then
+       do i = istart, iend, 2
+          if (i == 1 .or. i == 2) cycle
           if (mod(val, i) == 0) then
-#ifdef _OPENMP
-             !$ is_prim_p = .false.
-#else
              is_prim = .false.
              return
-#endif
           end if
-#ifdef _OPENMP
-          !$ is_prim = is_prim * is_prim_p ! assuming .false. is zero...
-#endif
        end do
-       !$omp end do
-       !$omp end parallel
-#ifndef _OPENMP
-       is_prim = .true.
-#endif
     else
-       !$omp parallel private(i, is_prim_p)
-       !$ is_prim_p = .true.
-       !$omp do reduction(*:is_prim)
        do i = istart, iend-1, 2
+          if (i == 1 .or. i == 2) cycle
           if (mod(val, i) == 0) then
-#ifdef _OPENMP
-             !$ is_prim_p = .false.
-#else
              is_prim = .false.
              return
-#endif
           end if
-#ifdef _OPENMP
-          !$ is_prim = is_prim * is_prim_p ! assuming .false. is zero...
-#endif
        end do
-       !$omp end do
-       !$omp end parallel
-#ifndef _OPENMP
-       is_prim = .true.
-#endif 
     end if
 
   end subroutine is_prime
+
+  subroutine reduce_land(x)
+    implicit none
+    logical, intent(inout) :: x
+    
+    if (iam == 0) then
+       call mpi_reduce(mpi_in_place, x, 1, mpi_logical, mpi_land, 0, mpi_comm_world)
+    else
+       call mpi_reduce(x,            x, 1, mpi_logical, mpi_land, 0, mpi_comm_world)
+    end if
+  end subroutine reduce_land
   
   subroutine myfini
     implicit none
@@ -128,6 +132,10 @@ program main
   if (iam == 0) write(6, *) "val:", val
   
   call is_prime(val, is_prim)
+#ifdef _DEBUG
+  write(6, *) "debug: is_prim:", is_prim
+#endif
+  call reduce_land(is_prim)
   
   if (iam == 0) then
      if (is_prim) then
