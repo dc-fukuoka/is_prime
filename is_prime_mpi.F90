@@ -30,9 +30,7 @@ contains
 
     size_mod = mod(size, np)
     size_l = size/np
-    if (iam < size_mod) then
-       size_l = size_l + 1
-    end if
+    if (iam < size_mod) size_l = size_l + 1
 
     if (iam == 0) then
        istart = 1
@@ -51,12 +49,10 @@ contains
 
   subroutine is_prime(val, is_prim)
     use mpi_f08
-    !$use omp_lib
     implicit none
     integer(8),intent(in) :: val
     logical,intent(out) :: is_prim
     integer(8) :: i
-    !$ logical :: is_prim_p
    
     is_prim = .true.
 
